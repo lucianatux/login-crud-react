@@ -12,3 +12,11 @@ body{
     color: white;
     margin: 20px;
 }
+
+.buttonApp{
+    background: #208080;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
