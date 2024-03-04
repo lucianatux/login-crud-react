@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { registerRequest, loginRequest } from "../api/auth";
+import Cookies from 'js-cookie';
 
 
 export const AuthContext = createContext();
@@ -32,16 +33,23 @@ export const AuthProvider = ({children}) => {
         try {
             const res = await loginRequest(user);
             console.log(res);
-            //console.log(res.data);
-            //setUser(res.data);
-            //setIsAuthenticated(true);
+            console.log(res.data);
+            setIsAuthenticated(true);
+            setUser(res.data);
         } catch (error) {
+            console.log(error.response);
+            console.log(error.response.data.messagge);
             if (Array.isArray(error.response.data)) {
                 return setErrors(error.response.data);
             }
-            setErrors([error.response.data.message]);
+            if(error.response.data.messagge){
+                setErrors([error.response.data.messagge]);
+            }else {
+                // Si no hay mensaje de error, establecer un mensaje genérico
+                setErrors(['An error occurred.']);
+              }
         }   
-    }
+    }  
 
     useEffect(() => {
         if(errors.length > 0){
@@ -51,6 +59,13 @@ export const AuthProvider = ({children}) => {
             return () => clearTimeout(timer);
         }
     },[errors]);
+
+    useEffect(() => {
+        const cookies = Cookies.get();
+        if (cookies.token){
+            console.log(cookies.token);
+        }
+    }, [])
 
     return (
         <AuthContext.Provider value={{
