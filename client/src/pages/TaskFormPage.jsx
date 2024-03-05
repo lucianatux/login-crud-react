@@ -4,9 +4,9 @@ import { useTasks } from "../context/TasksContext";
 function TaskFormPage() {
   const { register, handleSubmit } = useForm();
   const { createTask } = useTasks();
-  console.log(createTask());
 
   const onSubmit = handleSubmit((data) => {
+    createTask(data);
     console.log(data);
   });
 
