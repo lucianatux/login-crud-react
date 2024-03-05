@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { registerRequest, loginRequest } from "../api/auth";
+import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth";
 import Cookies from 'js-cookie';
 
 
@@ -16,6 +16,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [errors, setErrors] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const signUp = async (user) => {
         try {
@@ -38,12 +39,12 @@ export const AuthProvider = ({children}) => {
             setUser(res.data);
         } catch (error) {
             console.log(error.response);
-            console.log(error.response.data.messagge);
+            console.log(error.response.data.message);
             if (Array.isArray(error.response.data)) {
                 return setErrors(error.response.data);
             }
-            if(error.response.data.messagge){
-                setErrors([error.response.data.messagge]);
+            if(error.response.data.message){
+                setErrors([error.response.data.message]);
             }else {
                 // Si no hay mensaje de error, establecer un mensaje genérico
                 setErrors(['An error occurred.']);
@@ -61,16 +62,38 @@ export const AuthProvider = ({children}) => {
     },[errors]);
 
     useEffect(() => {
-        const cookies = Cookies.get();
-        if (cookies.token){
-            console.log(cookies.token);
+        async function checkLogin(){
+            const cookies = Cookies.get();
+            
+            if (!cookies.token){
+                setIsAuthenticated(false);
+                setLoading(false);
+                return setUser(null);
+            }   
+            try {
+                const res = await verifyTokenRequest(cookies.token);
+                if(!res.data){
+                    setIsAuthenticated(false);
+                    setLoading(false);
+                    return;
+                }
+                setIsAuthenticated(true);
+                setUser(res.data);
+                setLoading(false);
+            } catch (error) {
+                setIsAuthenticated(false);
+                setUser(null);
+                setLoading(false);
+            }   
         }
+       checkLogin();
     }, [])
 
     return (
         <AuthContext.Provider value={{
             signUp, 
             signIn,
+            loading,
             user, 
             isAuthenticated,
             errors
