@@ -7,7 +7,6 @@ function TaskFormPage() {
 
   const onSubmit = handleSubmit((data) => {
     createTask(data);
-    console.log(data);
   });
 
   return (
