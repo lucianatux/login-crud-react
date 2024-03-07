@@ -14,7 +14,7 @@ function TaskCard({task}) {
            console.log(task._id); 
            deleteTask(task._id);
         }} >&#128465;</button>
-        <button title="edit">&#9998;</button>
+          <Link to={`/tasks/${task._id}`} title="edit">&#9998;</Link>
       </div>
       </header>
       <p className="text-slate-300">{task.description}</p>
