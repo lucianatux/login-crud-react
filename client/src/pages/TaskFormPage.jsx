@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 function TaskFormPage() {
   const { register, handleSubmit, setValue } = useForm();
-  const { createTask, getTask } = useTasks();
+  const { createTask, getTask, updateTask } = useTasks();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -14,14 +14,19 @@ function TaskFormPage() {
       if(params.id){
         const task = await getTask(params.id);
         console.log(task);
-        setValue("title");
+        setValue("title", task.title);
+        setValue("description", task.description);
       }
     }
     loadTask();
   }, [])
 
   const onSubmit = handleSubmit((data) => {
-    createTask(data);
+    if(params.id){
+      updateTask(params.id, data);
+    }else{
+      createTask(data);
+    }
     navigate("/tasks");
   });
 

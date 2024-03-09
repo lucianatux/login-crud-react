@@ -4,6 +4,7 @@ import {
   getTasksRequest,
   deleteTaskRequest,
   getTaskRequest,
+  updateTaskRequest
 } from "../api/tasks";
 
 const TaskContext = createContext();
@@ -52,6 +53,14 @@ export function TaskProvider({ children }) {
     }
   };
 
+  const updateTask = async (id, task) => {
+    try {
+      await updateTaskRequest(id, task);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <TaskContext.Provider
       value={{
@@ -60,6 +69,7 @@ export function TaskProvider({ children }) {
         getTasks,
         deleteTask,
         getTask,
+        updateTask
       }}
     >
       {children}
